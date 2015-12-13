@@ -1,0 +1,8 @@
+[
+    {
+        "id": "logging",
+        "label": "Extra Logging",
+        "type": "bool",
+        "default": "false"
+    }
+]
