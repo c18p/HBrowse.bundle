@@ -62,7 +62,7 @@ def Start():
     Dict.Save()
 
 @handler('/photos/hbrowse', NAME, ICON)
-def MainMenu():       
+def MainMenu():
 
     oc = ObjectContainer()
 
@@ -100,7 +100,7 @@ def MainMenu():
 
     return oc
 
-####################################################################################################        
+####################################################################################################
 # Search
 ####################################################################################################
 @route('/photos/hbrowse/search')
@@ -222,7 +222,7 @@ def SearchAdvancedHistory():
                                             excludes=item[1]),
                                title=u'+%s / -%s' % (item[0], item[1])))
 
-    return oc        
+    return oc
 
 ####################################################################################################
 # Listings
@@ -326,7 +326,7 @@ def ListBooks(category=None, sub_category=None, sort_method=None, page=1, page_d
             title2 = "{0}/{1} - {2}".format(category, sub_category, L(sort_method))
         else:
             title2 = "{0} - {1}".format(category, L(sort_method))
-        
+
         url = URL_BROWSE_CAT.format(category) if not sub_category else \
               URL_BROWSE_CAT_SUB.format(category, sub_category.replace(" ", "_"))
         url += ORDER_BY_URLS[sort_method]
@@ -339,16 +339,20 @@ def ListBooks(category=None, sub_category=None, sort_method=None, page=1, page_d
         data = HTML.ElementFromString(page_data)
         oc = ObjectContainer(title2=L('search'), replace_parent=True)
 
-    titles = data.xpath("//td[@class='browseTitle']")
+    titles = data.xpath("//div[@class='thumbDiv']")
 
     for item in titles:
-        
         children = item.getchildren()
-
-        book_url = children[1].get('href')
+        try:
+            book_url = children[0].get('href')
+        except:
+            continue
         book_id = GetBookId(book_url)
         thumb = URL_BOOK_THUMB_1.format(book_id)
-        title = children[1].text
+        try:
+            title = children[0].get('title').split('\'')[1]
+        except:
+            title = '...'
         if Prefs['logging']: Log("HBROWSE: ListBooks - bookurl=" + book_url)
 
         oc.add(DirectoryObject(key=Callback(ListChapters,
@@ -455,14 +459,14 @@ def CleanUrl(url):
 def GetBookId(url):
     return CleanUrl(url).split("/")[-2]
 
-####################################################################################################        
+####################################################################################################
 # all the tags for advanced searching
 ADVANCED_SEARCH_TAGS = [
     "genre_action", "genre_adventure", "genre_anime", "genre_bizarre", "genre_comedy",
     "genre_drama", "genre_fantasy", "genre_gore", "genre_historic", "genre_horror", "genre_medieval",
     "genre_modern", "genre_myth", "genre_psychological", "genre_romance", "genre_school_life",
     "genre_scifi", "genre_supernatural", "genre_video_game", "genre_visual_novel",
-    
+
     "type_anthology", "type_bestiality", "type_dandere", "type_deredere", "type_fully_colored", "type_futanari",
     "type_gender_bender", "type_guro", "type_harem", "type_incest", "type_kuudere", "type_lolicon",
     "type_long_story", "type_netorare", "type_non-con", "type_partly_colored", "type_reverse_harem",
